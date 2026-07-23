@@ -1,0 +1,95 @@
+# ============================================================
+# docker-compose.yml
+# ============================================================
+#
+# Docker Compose orchestrates multiple containers as a single application.
+# Running 'docker-compose up' starts BOTH the FastAPI service and PostgreSQL,
+# wires them together on a private network, and maps ports to your host machine.
+#
+# Services defined here:
+#   db  -> PostgreSQL 16 database
+#   api -> FastAPI application
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # PostgreSQL Database
+  # ----------------------------------------------------------
+  db:
+    image: postgres:16-alpine   # Official PostgreSQL image. "alpine" is a small Linux variant.
+    restart: unless-stopped     # Restart automatically unless you manually stop it.
+
+    environment:
+      # These environment variables configure the PostgreSQL server on first start.
+      # They must match the credentials in DATABASE_URL below.
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      # Named volume: persists the database data between 'docker-compose down' + 'up'.
+      # Without this, your data would be lost every time you stop the containers!
+      - postgres_data:/var/lib/postgresql/data
+
+    # Healthcheck: Docker will periodically run this command inside the container.
+    # The 'api' service uses this to know when the DB is actually ready to accept
+    # connections (not just "started"). This prevents the API from crashing on
+    # startup because it tried to connect before PostgreSQL was ready.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s    # Check every 5 seconds.
+      timeout: 5s     # Consider it failed if it takes longer than 5 seconds.
+      retries: 5      # After 5 failures, mark the service as "unhealthy".
+      start_period: 10s  # Give PostgreSQL 10 seconds to start before checking.
+
+    ports:
+      # Expose PostgreSQL to your host machine so you can connect with a GUI
+      # like pgAdmin or DBeaver for debugging. Format: "host_port:container_port"
+      # Remove this if you don't want the DB reachable from outside Docker.
+      - "5432:5432"
+
+
+  # ----------------------------------------------------------
+  # FastAPI Application
+  # ----------------------------------------------------------
+  api:
+    build:
+      context: .          # Build the image using the Dockerfile in this directory.
+      dockerfile: Dockerfile
+
+    restart: unless-stopped
+
+    # Pass environment variables into the FastAPI container.
+    # These are read from your .env file by Docker Compose automatically.
+    environment:
+      # SQLAlchemy connection string. "db" is the hostname — it matches the
+      # service name above, and Docker's internal DNS resolves it automatically.
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+
+    ports:
+      # Map port 8000 on your host to port 8000 in the container.
+      # Access the API at http://localhost:8000
+      - "8000:8000"
+
+    volumes:
+      # Mount the ./app directory into the container.
+      # This means code changes on your host are immediately reflected
+      # inside the container without rebuilding the image (works with --reload).
+      - ./app:/app/app
+
+    depends_on:
+      # Don't start the API until the 'db' service passes its healthcheck.
+      # 'service_healthy' is stricter than the default 'service_started' —
+      # it waits until PostgreSQL is actually accepting connections.
+      db:
+        condition: service_healthy
+
+
+# ============================================================
+# Named Volumes
+# ============================================================
+# Volumes declared here are managed by Docker and persist data between
+# container restarts. 'postgres_data' stores the actual database files.
+volumes:
+  postgres_data:

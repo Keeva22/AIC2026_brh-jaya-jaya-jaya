@@ -1,0 +1,25 @@
+# Environment variables — contains secrets, never commit this!
+.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments (if you ever run outside Docker)
+.venv/
+venv/
+env/
+
+# Docker volumes (if ever stored locally)
+postgres_data/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

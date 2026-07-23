@@ -1,0 +1,25 @@
+# ---------------------------------------------------------------------------
+# FastAPI + Uvicorn
+# ---------------------------------------------------------------------------
+fastapi==0.115.6
+uvicorn[standard]==0.32.1          # ASGI server that runs the FastAPI app
+                                   # [standard] includes extras like better
+                                   # performance via uvloop (on Linux/Mac)
+
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
+sqlalchemy==2.0.36                 # ORM for defining tables and querying
+psycopg2-binary==2.9.10            # PostgreSQL driver (the "binary" variant
+                                   # bundles native libs so no system deps needed)
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+python-dotenv==1.0.1               # Loads .env files into environment variables
+
+# ---------------------------------------------------------------------------
+# Data validation (included with FastAPI, pinned for reproducibility)
+# ---------------------------------------------------------------------------
+pydantic==2.10.3                   # Already a FastAPI dependency; explicit pin
+                                   # ensures everyone uses the same version
