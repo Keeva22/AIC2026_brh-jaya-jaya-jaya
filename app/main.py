@@ -23,14 +23,28 @@ from app.routers import scans, stats
 from app.schemas import HealthResponse
 
 # ---------------------------------------------------------------------------
-# Create all database tables on startup
+# Create / migrate database tables on startup
 # ---------------------------------------------------------------------------
-# This reads all SQLAlchemy models that inherit from 'Base' and issues
-# CREATE TABLE IF NOT EXISTS statements for each one.
-#
-# This approach is simple and works well for this project. If you need
-# to ALTER existing tables (e.g. add a new column to 'scans'), you would
-# instead use Alembic migrations — but that's more complex to set up.
+# Step 1 — Lightweight schema migration: add the missing_components column to
+# the scans table if it does not already exist.  This handles the case where
+# the container was already running with the old schema (before this column
+# was added).  PostgreSQL's "IF NOT EXISTS" clause makes this statement a
+# completely safe no-op on brand-new databases or after the first migration.
+try:
+    with engine.connect() as _conn:
+        _conn.execute(
+            text(
+                "ALTER TABLE scans "
+                "ADD COLUMN IF NOT EXISTS missing_components JSONB"
+            )
+        )
+        _conn.commit()
+except Exception:
+    # The table may not exist yet on a fresh deployment — create_all below
+    # will handle that case.  Any other error surfaces at request time.
+    pass
+
+# Step 2 — Create any tables that don't exist yet (CREATE TABLE IF NOT EXISTS).
 Base.metadata.create_all(bind=engine)
 
 # ---------------------------------------------------------------------------

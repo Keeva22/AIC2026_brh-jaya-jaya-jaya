@@ -19,7 +19,7 @@ Naming convention used here:
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -36,6 +36,49 @@ class VerdictEnum(str, Enum):
     """
     worthy = "worthy"
     not_worthy = "not_worthy"
+
+
+# ---------------------------------------------------------------------------
+# Missing component schema
+# ---------------------------------------------------------------------------
+
+class MissingComponent(BaseModel):
+    """
+    Represents a single missing component detected by the AI/CV model.
+
+    Only 'name' is required — location and confidence data may not be
+    available depending on the model version. Extra fields passed in the
+    JSON payload are silently ignored, keeping the schema forward-compatible.
+    """
+    name: str = Field(
+        ...,
+        min_length=1,
+        description="Label / name of the missing component, e.g. 'capacitor'.",
+        examples=["capacitor"],
+    )
+    x: Optional[float] = Field(
+        default=None,
+        description="X-coordinate of the component on the image, if available.",
+        examples=[120.0],
+    )
+    y: Optional[float] = Field(
+        default=None,
+        description="Y-coordinate of the component on the image, if available.",
+        examples=[340.0],
+    )
+    confidence: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+        description="Detection confidence for this specific component (0.0–1.0), if available.",
+        examples=[0.91],
+    )
+
+    model_config = {
+        # Allow extra fields so new attributes added later won't break
+        # old clients or cause Pydantic validation errors.
+        "extra": "ignore",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -71,6 +114,13 @@ class ScanCreate(BaseModel):
         description="Optional URL pointing to the scan image.",
         examples=["https://storage.example.com/scans/abc123.jpg"],
     )
+    missing_components: List[MissingComponent] = Field(
+        default_factory=list,
+        description=(
+            "Optional list of missing components detected by the AI/CV model. "
+            "Omit or pass an empty list if not available."
+        ),
+    )
 
     @field_validator("object_type")
     @classmethod
@@ -90,11 +140,24 @@ class ScanRead(BaseModel):
     confidence: float
     image_url: Optional[str]
     created_at: datetime
+    missing_components: List[MissingComponent] = Field(
+        default_factory=list,
+        description="List of missing components, or empty list if none detected.",
+    )
 
     # 'from_attributes = True' allows Pydantic to read data from a SQLAlchemy
     # ORM object (which uses attribute access) instead of a plain dict.
     # Without this, you'd get a validation error when passing an ORM object.
     model_config = {"from_attributes": True}
+
+    @field_validator("missing_components", mode="before")
+    @classmethod
+    def coerce_none_to_empty_list(cls, v: Any) -> Any:
+        """
+        Old rows (inserted before this column existed) will have NULL in the DB.
+        We normalise NULL → [] so callers always receive a list, never null.
+        """
+        return v if v is not None else []
 
 
 class PaginatedScans(BaseModel):
@@ -133,6 +196,18 @@ class SummaryStats(BaseModel):
     # If the caller requests a daily breakdown, this list is populated.
     # Otherwise it's None (omitted from the JSON response).
     daily_breakdown: Optional[List[DailyStat]] = None
+
+    # Frequency map of missing component names across all scans.
+    # Key = component name (e.g. "capacitor"), Value = count of occurrences.
+    # Only present when at least one scan has a non-empty missing_components list.
+    missing_component_counts: Optional[Dict[str, int]] = Field(
+        default=None,
+        description=(
+            "How often each missing component name appears across all scans. "
+            "e.g. {\"capacitor\": 12, \"resistor_R3\": 5}. "
+            "null when no scans have missing component data."
+        ),
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, Float, Integer, String
 from sqlalchemy import CheckConstraint
+from sqlalchemy import JSON
 
 from app.database import Base
 
@@ -55,6 +56,16 @@ class Scan(Base):
     # Optional URL to the scan image stored elsewhere (e.g. an S3 bucket).
     # nullable=True means this column can be left empty (NULL in the database).
     image_url = Column(String, nullable=True)
+
+    # Optional list of missing component detections from the AI/CV model.
+    # Stored as a JSON array so the schema is fully flexible — new optional
+    # fields (e.g. bounding-box coords) can be added later without a migration.
+    # Each element is a dict shaped like:
+    #   { "name": str, "x": float|None, "y": float|None, "confidence": float|None }
+    # 'default=list' ensures new rows get [] instead of NULL when the field
+    # is omitted, and old rows already in the DB will return NULL (treated as
+    # an empty list by the API layer).
+    missing_components = Column(JSON, nullable=True, default=list)
 
     # Timestamp of when the scan record was created.
     # 'default' is applied by SQLAlchemy in Python before inserting the row.

@@ -48,7 +48,10 @@ def create_scan(
     2. We build a SQLAlchemy Scan object from the validated data.
     3. We add it to the session, commit, and return the created record.
     """
-    # Build the ORM object. '.model_dump()' converts the Pydantic object to a dict.
+    # Build the ORM object from validated Pydantic data.
+    # .model_dump() converts the entire payload (including nested MissingComponent
+    # objects) to a plain Python dict — nested models become plain dicts, which
+    # is exactly what the JSON column expects for storage.
     new_scan = Scan(**payload.model_dump())
 
     db.add(new_scan)    # Tell SQLAlchemy to track this new object.
