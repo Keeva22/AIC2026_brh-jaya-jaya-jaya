@@ -147,12 +147,15 @@ def get_summary(
             )
 
     # -----------------------------------------------------------------------
-    # Missing component frequency breakdown
+    # Missing component quantity breakdown
     # -----------------------------------------------------------------------
-    # We fetch only the JSON column for the filtered result set and tally
-    # component names in Python. This is straightforward, works across all
-    # DB backends, and avoids complex JSON-unnesting SQL that differs between
+    # We fetch only the JSON column for the filtered result set and sum the
+    # 'count' field of each component entry in Python. This works across all
+    # DB backends and avoids complex JSON-unnesting SQL that differs between
     # PostgreSQL and SQLite.
+    #
+    # Each element is shaped like: {"name": "resistor", "count": 2}
+    # So scan A {"resistor": 2} + scan B {"resistor": 3} → summary {"resistor": 5}.
     from collections import Counter  # local import to keep top-level clean
 
     mc_rows = (
@@ -167,8 +170,9 @@ def get_summary(
         if components:  # skip empty lists
             for comp in components:
                 name = comp.get("name") if isinstance(comp, dict) else getattr(comp, "name", None)
-                if name:
-                    component_counter[name] += 1
+                qty = comp.get("count") if isinstance(comp, dict) else getattr(comp, "count", None)
+                if name and isinstance(qty, int) and qty > 0:
+                    component_counter[name] += qty
 
     # Return None (field absent from JSON) when there is no component data at all.
     missing_component_counts = dict(component_counter) if component_counter else None

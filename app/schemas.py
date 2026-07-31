@@ -46,37 +46,27 @@ class MissingComponent(BaseModel):
     """
     Represents a single missing component detected by the AI/CV model.
 
-    Only 'name' is required — location and confidence data may not be
-    available depending on the model version. Extra fields passed in the
-    JSON payload are silently ignored, keeping the schema forward-compatible.
+    The AI/CV team provides only the component name and how many are missing —
+    no coordinates or per-component confidence scores. Extra fields passed in
+    the JSON payload are silently ignored, keeping the schema forward-compatible
+    (e.g. old payloads that still include x/y/confidence won't cause a 422).
     """
     name: str = Field(
         ...,
         min_length=1,
-        description="Label / name of the missing component, e.g. 'capacitor'.",
-        examples=["capacitor"],
+        description="Label / name of the missing component, e.g. 'resistor'.",
+        examples=["resistor"],
     )
-    x: Optional[float] = Field(
-        default=None,
-        description="X-coordinate of the component on the image, if available.",
-        examples=[120.0],
-    )
-    y: Optional[float] = Field(
-        default=None,
-        description="Y-coordinate of the component on the image, if available.",
-        examples=[340.0],
-    )
-    confidence: Optional[float] = Field(
-        default=None,
-        ge=0.0,
-        le=1.0,
-        description="Detection confidence for this specific component (0.0–1.0), if available.",
-        examples=[0.91],
+    count: int = Field(
+        ...,
+        ge=1,
+        description="How many of this component are missing (must be at least 1).",
+        examples=[2],
     )
 
     model_config = {
-        # Allow extra fields so new attributes added later won't break
-        # old clients or cause Pydantic validation errors.
+        # Allow extra fields so old payloads (with x/y/confidence) won't cause
+        # Pydantic validation errors — those keys are simply discarded.
         "extra": "ignore",
     }
 
@@ -197,14 +187,14 @@ class SummaryStats(BaseModel):
     # Otherwise it's None (omitted from the JSON response).
     daily_breakdown: Optional[List[DailyStat]] = None
 
-    # Frequency map of missing component names across all scans.
-    # Key = component name (e.g. "capacitor"), Value = count of occurrences.
+    # Summed missing quantities per component name across all scans.
+    # Key = component name (e.g. "capacitor"), Value = total units missing.
     # Only present when at least one scan has a non-empty missing_components list.
     missing_component_counts: Optional[Dict[str, int]] = Field(
         default=None,
         description=(
-            "How often each missing component name appears across all scans. "
-            "e.g. {\"capacitor\": 12, \"resistor_R3\": 5}. "
+            "Total number of missing units per component name, summed across all scans. "
+            "e.g. {\"capacitor\": 12, \"resistor\": 5}. "
             "null when no scans have missing component data."
         ),
     )

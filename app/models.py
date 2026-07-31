@@ -58,10 +58,10 @@ class Scan(Base):
     image_url = Column(String, nullable=True)
 
     # Optional list of missing component detections from the AI/CV model.
-    # Stored as a JSON array so the schema is fully flexible — new optional
-    # fields (e.g. bounding-box coords) can be added later without a migration.
+    # Stored as a JSON array so the schema is flexible and no migration is
+    # needed if the structure evolves later.
     # Each element is a dict shaped like:
-    #   { "name": str, "x": float|None, "y": float|None, "confidence": float|None }
+    #   { "name": str, "count": int }  ← name of component + how many are missing
     # 'default=list' ensures new rows get [] instead of NULL when the field
     # is omitted, and old rows already in the DB will return NULL (treated as
     # an empty list by the API layer).
