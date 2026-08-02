@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Scan
-from app.schemas import PaginatedScans, ScanCreate, ScanRead, VerdictEnum
+from app.schemas import ObjectTypeEnum, PaginatedScans, ScanCreate, ScanRead, VerdictEnum
 
 # An APIRouter groups related endpoints together. We include this router
 # in main.py with a shared prefix ("/scans"), so we don't need to repeat

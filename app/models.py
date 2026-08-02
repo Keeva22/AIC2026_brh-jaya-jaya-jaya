@@ -61,7 +61,14 @@ class Scan(Base):
     # Stored as a JSON array so the schema is flexible and no migration is
     # needed if the structure evolves later.
     # Each element is a dict shaped like:
-    #   { "name": str, "count": int }  ← name of component + how many are missing
+    #   {
+    #     "name": str,     ← component label (e.g. "resistor")
+    #     "count": int,   ← how many are missing
+    #     "location": {   ← optional; omitted when unknown
+    #       "label": str, ← silkscreen designator, e.g. "R17" (optional)
+    #       "area": str   ← rough zone in Bahasa Indonesia, e.g. "kiri atas" (optional)
+    #     }
+    #   }
     # 'default=list' ensures new rows get [] instead of NULL when the field
     # is omitted, and old rows already in the DB will return NULL (treated as
     # an empty list by the API layer).
