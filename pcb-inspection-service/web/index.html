@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08131b" />
+    <title>PCB Vision Lab — Missing Component Inspection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/web/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <div>
+            <div class="brand-name">PCB<span>VISION</span></div>
+            <div class="brand-subtitle">MISSING COMPONENT INSPECTION</div>
+          </div>
+        </div>
+        <div class="topbar-meta">
+          <div class="connection-pill"><span class="pulse-dot"></span><span id="connectionLabel">CONNECTING TO ENGINE</span></div>
+          <div class="session-chip"><span class="mono">SESSION</span><strong id="sessionId">—</strong></div>
+        </div>
+      </header>
+
+      <div class="page-grid">
+        <aside class="sidebar">
+          <div class="sidebar-heading">
+            <div>
+              <div class="eyebrow">INSPECTION QUEUE</div>
+              <h2>Select a PCB</h2>
+            </div>
+            <span class="board-count" id="boardCount">05</span>
+          </div>
+          <p class="sidebar-copy">Pilih board untuk memulai inspeksi. Camera boards membuka kamera otomatis.</p>
+          <div class="board-list" id="boardList" aria-live="polite">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+          <div class="sidebar-footer">
+            <div class="mini-status"><span class="status-icon">⌁</span><div><span class="mono">PIPELINE</span><strong>READY FOR DEMO</strong></div></div>
+            <div class="mini-status"><span class="status-icon">◎</span><div><span class="mono">ENGINE</span><strong>YOLO + SLOT MATCH</strong></div></div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <section class="welcome-row">
+            <div>
+              <div class="eyebrow accent-eyebrow">AUTOMATED QUALITY GATE <span class="eyebrow-line"></span></div>
+              <h1>Inspect. Verify.<br /><em>Ship with confidence.</em></h1>
+              <p class="hero-copy">Deteksi komponen PCB yang hilang dengan camera alignment dan reference database dalam satu alur inspeksi.</p>
+            </div>
+            <div class="hero-stamp">
+              <span class="stamp-mark">✳</span>
+              <span><strong>HACKATHON<br />DEMO CONSOLE</strong><small>LOCAL WEB APP / V1.0</small></span>
+            </div>
+          </section>
+
+          <section class="context-card" aria-labelledby="selectedBoardTitle">
+            <div class="context-heading">
+              <div class="context-title-wrap">
+                <span class="selection-index" id="selectionIndex">01</span>
+                <div>
+                  <div class="eyebrow">CURRENT INSPECTION</div>
+                  <h2 id="selectedBoardTitle">Pilih board dari queue</h2>
+                </div>
+              </div>
+              <div class="mode-badge" id="modeBadge">AWAITING SELECTION</div>
+            </div>
+
+            <div class="inspection-grid">
+              <div class="capture-panel">
+                <div class="panel-toolbar">
+                  <div class="toolbar-label"><span class="toolbar-dot" id="sourceDot"></span><span id="sourceLabel">INPUT SOURCE</span></div>
+                  <div class="toolbar-actions">
+                    <button class="icon-button" id="flipCameraButton" type="button" title="Flip camera" hidden>↔</button>
+                    <button class="text-button" id="uploadButton" type="button"><span>＋</span> UPLOAD FRAME</button>
+                    <input id="uploadInput" type="file" accept="image/*" hidden />
+                  </div>
+                </div>
+
+                <div class="capture-stage" id="captureStage">
+                  <div class="empty-stage">
+                    <div class="empty-icon">⌁</div>
+                    <strong>Choose a board to begin</strong>
+                    <span>Camera or reference image akan tampil di sini.</span>
+                  </div>
+                </div>
+
+                <div class="capture-footer">
+                  <div class="camera-state"><span class="state-led" id="cameraLed"></span><span id="cameraState">NO INPUT SELECTED</span></div>
+                  <div class="capture-hint mono" id="captureHint">SYSTEM IDLE</div>
+                </div>
+              </div>
+
+              <div class="result-panel">
+                <div class="result-panel-header">
+                  <div>
+                    <div class="eyebrow">INSPECTION RESULT</div>
+                    <h3 id="resultHeading">Waiting for input</h3>
+                  </div>
+                  <div class="result-status status-idle" id="resultStatus"><span class="status-dot"></span><span id="resultStatusText">IDLE</span></div>
+                </div>
+                <div class="result-image-wrap" id="resultImageWrap">
+                  <div class="result-placeholder"><span>◌</span><p>Annotated result will appear here</p></div>
+                </div>
+                <div class="metric-row">
+                  <div class="metric"><span class="metric-label">REFERENCE</span><strong id="referenceCount">—</strong><small>expected slots</small></div>
+                  <div class="metric"><span class="metric-label">MATCHED</span><strong id="analyzedCount">—</strong><small>reference slots</small></div>
+                  <div class="metric"><span class="metric-label">MISSING</span><strong class="metric-fail" id="missingCount">—</strong><small>flagged slots</small></div>
+                </div>
+                <div class="result-note" id="resultNote">Run an inspection to populate the quality report.</div>
+              </div>
+            </div>
+
+            <div class="database-controls" id="databaseControls" hidden>
+              <div class="section-label"><span class="section-number">01</span><span>REFERENCE DATABASE</span><span class="section-rule"></span><span class="mono" id="referenceMeta">NORMAL PCB</span></div>
+              <div class="reference-strip">
+                <div class="reference-card"><div class="image-label">REFERENCE / PASS BASELINE</div><img id="referenceImage" alt="PCB reference normal" /></div>
+                <div class="sample-picker">
+                  <div class="image-label">TEST IMAGE / SELECT SAMPLE</div>
+                  <div class="sample-list" id="sampleList"></div>
+                  <p class="sample-help">Pilih citra normal atau citra dengan komponen yang dihilangkan, lalu tekan inspect.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <div class="action-copy"><span class="action-led" id="actionLed"></span><span id="actionMessage">Select a PCB profile from the inspection queue.</span></div>
+              <button class="inspect-button" id="inspectButton" type="button" disabled><span class="button-icon">⌁</span><span id="inspectButtonLabel">INSPECT BOARD</span><span class="button-arrow">↗</span></button>
+            </div>
+          </section>
+
+          <section class="insight-grid">
+            <div class="insight-card component-card">
+              <div class="insight-heading"><div><div class="eyebrow">LOCATION REPORT</div><h3>Flagged component slots</h3></div><span class="report-chip" id="reportChip">NO REPORT</span></div>
+              <div class="component-list" id="componentList"><div class="list-empty">Hasil lokasi akan muncul setelah inspeksi.</div></div>
+            </div>
+            <div class="insight-card method-card">
+              <div class="eyebrow">HOW THIS RUN WORKED</div>
+              <h3 id="methodTitle">Ready when you are.</h3>
+              <p id="methodDescription">Kamera akan disejajarkan dengan reference PCB sebelum component slots dicocokkan.</p>
+              <div class="method-steps"><span class="method-step active"><i>01</i> CAPTURE</span><span class="method-step"><i>02</i> ALIGN</span><span class="method-step"><i>03</i> VERIFY</span></div>
+            </div>
+          </section>
+
+          <footer class="page-footer"><span>PCB VISION / QUALITY ENGINEERING</span><span class="mono">LOCALHOST READY · <span id="footerClock">--:--:--</span></span></footer>
+        </main>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <canvas id="captureCanvas" hidden></canvas>
+    <script src="/web/app.js" defer></script>
+  </body>
+</html>

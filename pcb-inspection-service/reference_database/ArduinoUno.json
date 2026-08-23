@@ -1,0 +1,31 @@
+{
+  "board_name": "ArduinoUno",
+  "input_type": "image_or_camera",
+  "image_file": "ArduinoUno_reference.jpg",
+  "image_width": 1212,
+  "image_height": 835,
+  "components": [
+    {"class": "connector", "center": [146, 221], "bbox": [0, 126, 292, 316]},
+    {"class": "connector", "center": [791, 31], "bbox": [409, 0, 1174, 64]},
+    {"class": "connector", "center": [210, 740], "bbox": [83, 644, 338, 835]},
+    {"class": "connector", "center": [765, 806], "bbox": [600, 775, 930, 835]},
+    {"class": "connector", "center": [1052, 806], "bbox": [930, 775, 1175, 835]},
+    {"class": "connector", "center": [1180, 399], "bbox": [1148, 335, 1212, 460]},
+    {"class": "ic", "center": [887, 590], "bbox": [601, 509, 1173, 672]},
+    {"class": "ic", "center": [435, 274], "bbox": [404, 238, 467, 310]},
+    {"class": "ic", "center": [284, 574], "bbox": [260, 518, 310, 630]},
+    {"class": "led", "center": [573, 256], "bbox": [549, 242, 597, 270]},
+    {"class": "led", "center": [573, 300], "bbox": [549, 285, 597, 314]},
+    {"class": "led", "center": [1058, 274], "bbox": [1032, 254, 1085, 292]},
+    {"class": "capacitor", "center": [433, 735], "bbox": [375, 667, 491, 804]},
+    {"class": "capacitor", "center": [563, 735], "bbox": [503, 667, 623, 804]},
+    {"class": "capacitor", "center": [361, 181], "bbox": [345, 165, 378, 198]},
+    {"class": "capacitor", "center": [364, 347], "bbox": [346, 333, 383, 361]},
+    {"class": "capacitor", "center": [465, 345], "bbox": [446, 331, 484, 359]},
+    {"class": "capacitor", "center": [803, 492], "bbox": [782, 479, 824, 505]},
+    {"class": "resistor", "center": [357, 228], "bbox": [340, 217, 375, 240]},
+    {"class": "resistor", "center": [1028, 339], "bbox": [1005, 329, 1052, 350]},
+    {"class": "resistor", "center": [1060, 301], "bbox": [1038, 290, 1082, 312]},
+    {"class": "diode", "center": [470, 800], "bbox": [427, 782, 512, 818]}
+  ]
+}

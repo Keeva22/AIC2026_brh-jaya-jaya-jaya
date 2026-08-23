@@ -1,0 +1,9 @@
+# Runtime dependencies for PCB AI inspection and the FastAPI web service.
+fastapi
+numpy
+opencv-contrib-python
+python-multipart
+torch
+torchvision
+ultralytics
+uvicorn[standard]
