@@ -1,3 +1,16 @@
+# PCBVISION — PCB Missing Component QC Inspection System
+
+Sistem QC inspection otomatis untuk mendeteksi komponen pcb yang hilang/tidak
+terpasang pada PCB, dikembangkan untuk AIC 2026. Sistem terdiri dari 3 bagian
+utama yang bekerja sama secara end-to-end:
+
+1. **CV AI Detection Module** — mendeteksi komponen PCB via kamera (YOLO) atau
+   perbandingan database, lalu menentukan status FAIL/PASS.
+2. **Backend API** — menerima hasil deteksi dari AI, menyimpan ke database
+   (PostgreSQL), dan menyajikan data ke frontend.
+3. **Web Dashboard** — menampilkan hasil inspeksi secara real-time untuk
+   monitoring QC.
+   
 # A Hardware QC Inspection API
 
 Backend buat sistem QC Inspection lomba AIC 2026, intinya menerima hasil scan dari sistem AI (worthy/not worthy) terus disimpan ke database (postgresql) dan ditampilkan ke dashboard frontend. Backend tidak menentukan keputusan lulus/gagalnya sendiri karena itu tugas AI/CV, disini hanya menerima, menyimpan, dan menyaji datanya.
