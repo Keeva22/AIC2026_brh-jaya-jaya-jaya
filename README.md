@@ -2,6 +2,14 @@
 
 Backend buat sistem QC Inspection lomba AIC 2026, intinya menerima hasil scan dari sistem AI (worthy/not worthy) terus disimpan ke database (postgresql) dan ditampilkan ke dashboard frontend. Backend tidak menentukan keputusan lulus/gagalnya sendiri karena itu tugas AI/CV, disini hanya menerima, menyimpan, dan menyaji datanya.
 
+## Code Contributors
+
+Kontributor kode pada repository ini untuk tim BRH jaya jaya jaya, AIC 2026.
+
+- **Backend** (FastAPI, PostgreSQL, Docker) — dikembangkan oleh Keeva Ravendra Iman ([@Keeva22](https://github.com/Keeva22))
+- **CV AI Detection Module** (`pcb-inspection-service/`) — dikembangkan secara independen oleh Bagja Faishal Ramdani ([@BagjaFaishal](https://github.com/BagjaFaishal))
+> **Catatan:** Modul CV AI dikembangkan secara terpisah dan diintegrasikan ke repository ini untuk keperluan submission akhir lomba.
+
 ## Cara jalanin
 **Yang dibutuhkan**: Docker Desktop.
 tidak perlu install python manual, semua udah dibungkus di container.
